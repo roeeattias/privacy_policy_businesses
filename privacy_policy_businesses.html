@@ -404,10 +404,6 @@
                     <div class="error-message">
                         <strong>App Not Found</strong>
                         <p>The requested app privacy policy could not be found.</p>
-                        <p>Available apps:</p>
-                        <ul>
-                            ${Object.keys(appConfigs).map(key => `<li>${appConfigs[key].name} - <code>/${key}</code></li>`).join('')}
-                        </ul>
                         <p>Contact us at <strong>${developerInfo.email}</strong> for assistance.</p>
                     </div>
                 `;

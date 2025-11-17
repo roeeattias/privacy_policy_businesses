@@ -79,6 +79,10 @@
                 name: 'Moria Azaria',
                 packageId: 'com.sparkclient.moriaazaria'
             },
+            'oran-zandani': {
+                name: 'Oran Zandani',
+                packageId: 'com.sparkclient.oranzandani'
+            },
             // Add more apps here as needed
             // 'app-slug': {
             //     name: 'App Display Name',
@@ -98,18 +102,29 @@
             }
         };
 
-        // Get app name from URL path
+        // Get app name from URL hash or path
         function getAppFromURL() {
-            const path = window.location.pathname;
-            const segments = path.split('/').filter(s => s);
-            
-            // If there's a path segment, use it as the app slug
-            if (segments.length > 0) {
-                const appSlug = segments[0].toLowerCase();
-                return appConfigs[appSlug];
+            // First, try to get from hash (e.g., #moria-azaria)
+            let appSlug = window.location.hash.slice(1); // Remove the #
+
+            // If no hash, try to get from path
+            if (!appSlug) {
+                const path = window.location.pathname;
+                const segments = path.split('/').filter(s => s && s !== 'privacy_policy_businesses.html');
+                if (segments.length > 0) {
+                    appSlug = segments[segments.length - 1].toLowerCase();
+                }
             }
-            
-            // Default to first app if no path specified
+
+            // If we found a slug, look it up in configs
+            if (appSlug) {
+                appSlug = appSlug.toLowerCase();
+                if (appConfigs[appSlug]) {
+                    return appConfigs[appSlug];
+                }
+            }
+
+            // Default to first app if no valid slug found
             const firstAppKey = Object.keys(appConfigs)[0];
             return appConfigs[firstAppKey];
         }
@@ -391,10 +406,10 @@
             `;
         }
 
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        // Load privacy policy content
+        function loadPrivacyPolicy() {
             const app = getAppFromURL();
-            
+
             if (app) {
                 const content = generatePrivacyPolicy(app);
                 document.getElementById('content').innerHTML = content;
@@ -408,7 +423,13 @@
                     </div>
                 `;
             }
-        });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', loadPrivacyPolicy);
+
+        // Update content when hash changes (for browser back/forward navigation)
+        window.addEventListener('hashchange', loadPrivacyPolicy);
     </script>
 </body>
 </html>
